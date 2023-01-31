@@ -1,9 +1,13 @@
 import { BrowserRouter, Routes, Route, Link } from 'react-router-dom';
+import {
+  AddRecipe,
+  AllRecipes,
+  Profile,
+  SharedLayout,
+  Stats,
+} from './page/dashboard';
 
-import Landing from './page/Landing';
-import Register from './page/Register';
-import LogIn from './page/LogIn';
-import Error from './page/Error';
+import { Landing, Register, LogIn, Error } from './page';
 
 const App = () => {
   return (
