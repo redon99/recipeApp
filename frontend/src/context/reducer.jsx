@@ -4,6 +4,9 @@ import {
   REGISTER_USER_INIT,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_ERROR,
+  LOGIN_USER_INIT,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
 } from './actions';
 
 const reducer = (state, action) => {
@@ -37,10 +40,36 @@ const reducer = (state, action) => {
       user: action.payload.newUser,
       showAlert: true,
       alertType: 'success',
-      alertText: 'Successfuly registered!',
+      alertText: 'Successfuly registered! Logging In...',
     };
   }
   if (action.type === REGISTER_USER_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
+    };
+  }
+  if (action.type === LOGIN_USER_INIT) {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+  if (action.type === LOGIN_USER_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      token: action.payload.token,
+      user: action.payload.user,
+      showAlert: true,
+      alertType: 'success',
+      alertText: 'Success! Logging In...',
+    };
+  }
+  if (action.type === LOGIN_USER_ERROR) {
     return {
       ...state,
       isLoading: false,

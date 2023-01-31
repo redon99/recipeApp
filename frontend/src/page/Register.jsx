@@ -66,11 +66,8 @@ export default function SignUp() {
       return;
     }
     const currentUser = { firstName, lastName, email, password };
-    if (isMember) {
-      console.log('already a member');
-    } else {
-      registerUser(currentUser);
-    }
+
+    registerUser(currentUser);
   };
 
   useEffect(() => {

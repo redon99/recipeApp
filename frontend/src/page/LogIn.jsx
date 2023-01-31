@@ -1,5 +1,6 @@
 import * as React from 'react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -46,8 +47,10 @@ function Copyright(props) {
 const theme = createTheme();
 
 export default function SignInSide() {
+  const navigate = useNavigate();
   const [values, setValues] = useState(initialState);
-  const { isLoading, showAlert, displayAlert } = useAppContext();
+  const { isLoading, showAlert, displayAlert, user, loginUser } =
+    useAppContext();
 
   const handleChange = event => {
     setValues({ ...values, [event.target.name]: event.target.value });
@@ -55,13 +58,25 @@ export default function SignInSide() {
 
   const handleSubmit = event => {
     event.preventDefault();
-    const { email, password } = values;
+    const { email, password, isMember } = values;
     if (!email || !password) {
       displayAlert();
       return;
     }
-    console.log(values);
+    const currentUser = { email, password };
+    // if (isMember) {
+    //   loginUser(currentUser);
+    // }
+    loginUser(currentUser);
   };
+
+  useEffect(() => {
+    if (user) {
+      setTimeout(() => {
+        navigate('/');
+      }, 1500);
+    }
+  }, [user, navigate]);
 
   return (
     <ThemeProvider theme={theme}>

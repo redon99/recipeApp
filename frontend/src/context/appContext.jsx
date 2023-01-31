@@ -7,6 +7,9 @@ import {
   REGISTER_USER_INIT,
   REGISTER_USER_SUCCESS,
   REGISTER_USER_ERROR,
+  LOGIN_USER_INIT,
+  LOGIN_USER_SUCCESS,
+  LOGIN_USER_ERROR,
 } from './actions';
 
 import reducer from './reducer';
@@ -39,8 +42,8 @@ const AppProvider = props => {
     }, 5000);
   };
 
-  const addUserToLocaleStorage = ({ newUser, token }) => {
-    localStorage.setItem('user', JSON.stringify(newUser));
+  const addUserToLocaleStorage = ({ user, token }) => {
+    localStorage.setItem('user', JSON.stringify(user));
     localStorage.setItem('token', token);
   };
 
@@ -57,9 +60,9 @@ const AppProvider = props => {
         currentUser
       );
       console.log(response);
-      const { newUser, token } = response.data.data;
-      dispatch({ type: REGISTER_USER_SUCCESS, payload: { newUser, token } });
-      addUserToLocaleStorage({ newUser, token });
+      const { user, token } = response.data.data;
+      dispatch({ type: REGISTER_USER_SUCCESS, payload: { user, token } });
+      addUserToLocaleStorage({ user, token });
     } catch (err) {
       console.log(err.response);
       dispatch({
@@ -70,8 +73,31 @@ const AppProvider = props => {
     clearAlert();
   };
 
+  const loginUser = async currentUser => {
+    dispatch({ type: LOGIN_USER_INIT });
+    try {
+      const response = await axios.post(
+        `${process.env.REACT_APP_BASE_URL}/api/v1/auth/login`,
+        currentUser
+      );
+      console.log(response);
+      const { user, token } = response.data.data;
+      dispatch({ type: LOGIN_USER_SUCCESS, payload: { user, token } });
+      addUserToLocaleStorage({ user, token });
+    } catch (err) {
+      console.log(err.response);
+      dispatch({
+        type: LOGIN_USER_ERROR,
+        payload: { message: err.response.data.message },
+      });
+    }
+    clearAlert();
+  };
+
   return (
-    <AppContext.Provider value={{ ...state, displayAlert, registerUser }}>
+    <AppContext.Provider
+      value={{ ...state, displayAlert, registerUser, loginUser }}
+    >
       {props.children}
     </AppContext.Provider>
   );
