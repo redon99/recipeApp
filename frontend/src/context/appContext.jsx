@@ -11,6 +11,9 @@ import {
   LOGIN_USER_SUCCESS,
   LOGIN_USER_ERROR,
   LOGOUT_USER,
+  UPDATE_USER_INIT,
+  UPDATE_USER_SUCCESS,
+  UPDATE_USER_ERROR,
 } from './actions';
 
 import reducer from './reducer';
@@ -39,7 +42,7 @@ const AppProvider = props => {
   //request
   authFetch.interceptors.request.use(
     config => {
-      // config.headers['Authorization'] = `Bearer ${state.token}`;
+      config.headers['Authorization'] = `Bearer ${state.token}`;
       return config;
     },
     error => {
@@ -53,9 +56,9 @@ const AppProvider = props => {
       return response;
     },
     error => {
-      console.log(error.response);
+      // console.log(error.response);
       if (error.response.status === 401) {
-        console.log('AUTH ERROR');
+        logoutUser();
       }
       return Promise.reject(error);
     }
@@ -89,12 +92,10 @@ const AppProvider = props => {
         `${process.env.REACT_APP_BASE_URL}/api/v1/auth/register`,
         currentUser
       );
-      console.log(response);
       const { user, token } = response.data.data;
       dispatch({ type: REGISTER_USER_SUCCESS, payload: { user, token } });
       addUserToLocaleStorage({ user, token });
     } catch (err) {
-      console.log(err.response);
       dispatch({
         type: REGISTER_USER_ERROR,
         payload: { message: err.response.data.message },
@@ -130,12 +131,20 @@ const AppProvider = props => {
   };
 
   const updateUser = async currentUser => {
+    dispatch({ type: UPDATE_USER_INIT });
     try {
       const { data } = await authFetch.patch('/auth/updateUser', currentUser);
-      console.log(data);
+
+      const { user, token } = data.data;
+      dispatch({ type: UPDATE_USER_SUCCESS, payload: { user, token } });
+      addUserToLocaleStorage({ user, token });
     } catch (err) {
-      // console.log(err.response);
+      dispatch({
+        type: UPDATE_USER_ERROR,
+        payload: { message: err.response.data.message },
+      });
     }
+    clearAlert();
   };
 
   return (

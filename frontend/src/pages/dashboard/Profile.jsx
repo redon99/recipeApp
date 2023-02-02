@@ -17,7 +17,7 @@ const Profile = () => {
   const handleSubmit = e => {
     e.preventDefault();
     if ((!firstName, !lastName, !email)) {
-      displayAlert(); //BUG not showing
+      displayAlert();
       return;
     }
     updateUser({ firstName, lastName, email });
