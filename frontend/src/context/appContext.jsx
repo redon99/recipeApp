@@ -10,6 +10,7 @@ import {
   LOGIN_USER_INIT,
   LOGIN_USER_SUCCESS,
   LOGIN_USER_ERROR,
+  LOGOUT_USER,
 } from './actions';
 
 import reducer from './reducer';
@@ -94,9 +95,20 @@ const AppProvider = props => {
     clearAlert();
   };
 
+  const logoutUser = () => {
+    dispatch({ type: LOGOUT_USER });
+    removeUserFromLocaleStorage();
+  };
+
   return (
     <AppContext.Provider
-      value={{ ...state, displayAlert, registerUser, loginUser }}
+      value={{
+        ...state,
+        displayAlert,
+        registerUser,
+        loginUser,
+        logoutUser,
+      }}
     >
       {props.children}
     </AppContext.Provider>

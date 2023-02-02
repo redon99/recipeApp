@@ -8,6 +8,7 @@ import {
 } from './pages/dashboard';
 
 import { Landing, Register, LogIn, Error, ProtectedRoute } from './pages';
+import Drawer from './components/Drawer';
 
 const App = () => {
   return (

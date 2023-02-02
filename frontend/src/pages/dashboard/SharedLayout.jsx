@@ -1,14 +1,11 @@
 import React from 'react';
 import { Outlet, Link } from 'react-router-dom';
+import Drawer from './../../components/Drawer';
 
 const SharedLayout = () => {
   return (
     <div>
-      <nav>
-        <Link to='add-recipe'>Add Recipe</Link>
-        <Link to='all-recipes'>All Recipes</Link>
-      </nav>
-      <Outlet />
+      <Drawer children={<Outlet />} />
     </div>
   );
 };
