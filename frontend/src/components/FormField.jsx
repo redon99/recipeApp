@@ -6,7 +6,7 @@ const FormField = ({ type, name, value, handleChange, label }) => {
     <TextField
       autoComplete='given-name'
       name={name}
-      required
+      // required
       fullWidth
       id={name}
       label={label}
