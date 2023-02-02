@@ -5,6 +5,7 @@ const logger = require('morgan');
 const cors = require('cors');
 const notFoundMiddleware = require('./middlewares/notFound');
 const errorHandlerMiddleware = require('./middlewares/errorHandler');
+const authenticateUser = require('./middlewares/auth');
 
 const indexRouter = require('./routes/index');
 const usersRouter = require('./routes/users');
@@ -25,7 +26,7 @@ app.use(cookieParser());
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/recipes', recipesRouter);
+app.use('/api/v1/recipes', authenticateUser, recipesRouter);
 
 app.use(notFoundMiddleware);
 app.use(errorHandlerMiddleware);
