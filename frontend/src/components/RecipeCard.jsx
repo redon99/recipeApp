@@ -17,7 +17,7 @@ export default function ImgMediaCard(props) {
         component='img'
         alt={props.title}
         height='140'
-        image={props.imageURL}
+        src={props.imgURL}
       />
       <CardContent>
         <Typography gutterBottom variant='h5' component='div'>

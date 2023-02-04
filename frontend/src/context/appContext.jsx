@@ -21,6 +21,11 @@ import {
   CREATE_RECIPE_ERROR,
   GET_RECIPES_INIT,
   GET_RECIPES_SUCCESS,
+  SET_EDIT_RECIPE,
+  DELETE_RECIPE_INIT,
+  EDIT_RECIPE_INIT,
+  EDIT_RECIPE_SUCCESS,
+  EDIT_RECIPE_ERROR,
 } from './actions';
 
 import reducer from './reducer';
@@ -84,7 +89,6 @@ const AppProvider = props => {
       return response;
     },
     error => {
-      // console.log(error.response);
       if (error.response.status === 401) {
         logoutUser();
       }
@@ -228,10 +232,51 @@ const AppProvider = props => {
   };
 
   const setEditRecipe = id => {
-    console.log(`Set edit recipe: ${id}`);
+    dispatch({ type: SET_EDIT_RECIPE, payload: { id } });
   };
-  const deleteRecipe = id => {
-    console.log(`delete recipe: ${id}`);
+  const editRecipe = async () => {
+    dispatch({ type: EDIT_RECIPE_INIT });
+    try {
+      const {
+        title,
+        servings,
+        prepTime,
+        cuisine,
+        ingredients,
+        recipeDescription,
+        imgURL,
+        editRecipeId,
+      } = state;
+
+      await authFetch.patch(`/recipes/${editRecipeId}`, {
+        title,
+        servings,
+        prepTime,
+        cuisine,
+        ingredients,
+        recipeDescription,
+        imgURL,
+      });
+      dispatch({ type: EDIT_RECIPE_SUCCESS });
+      dispatch({ type: CLEAR_VALUES });
+    } catch (err) {
+      if (err.response.status === 401) return;
+      dispatch({
+        type: EDIT_RECIPE_ERROR,
+        payload: { message: err.response.data.message },
+      });
+    }
+    clearAlert();
+  };
+
+  const deleteRecipe = async recipeId => {
+    dispatch({ type: DELETE_RECIPE_INIT });
+    try {
+      await authFetch.delete(`/recipes/${recipeId}`);
+      getAllRecipes();
+    } catch (err) {
+      console.log(err.response);
+    }
   };
 
   return (
@@ -248,6 +293,7 @@ const AppProvider = props => {
         createRecipe,
         getAllRecipes,
         setEditRecipe,
+        editRecipe,
         deleteRecipe,
       }}
     >

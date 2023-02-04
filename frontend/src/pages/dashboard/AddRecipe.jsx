@@ -30,6 +30,7 @@ const AddRecipe = () => {
     handleChange,
     clearValues,
     createRecipe,
+    editRecipe,
   } = useAppContext();
 
   const handleRecipeInput = e => {
@@ -46,6 +47,7 @@ const AddRecipe = () => {
       return;
     }
     if (isEditing) {
+      editRecipe();
       return;
     }
     createRecipe();

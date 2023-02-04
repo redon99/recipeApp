@@ -18,6 +18,11 @@ import {
   CREATE_RECIPE_ERROR,
   GET_RECIPES_INIT,
   GET_RECIPES_SUCCESS,
+  SET_EDIT_RECIPE,
+  DELETE_RECIPE_INIT,
+  EDIT_RECIPE_INIT,
+  EDIT_RECIPE_SUCCESS,
+  EDIT_RECIPE_ERROR,
 } from './actions';
 
 import { initialState } from './appContext';
@@ -134,7 +139,7 @@ const reducer = (state, action) => {
     const initialState = {
       isEditing: false,
       editRecipeId: '',
-      recipeTitle: '',
+      title: '',
       prepTime: 1,
       servings: 1,
       cuisine: '',
@@ -179,6 +184,53 @@ const reducer = (state, action) => {
       recipes: action.payload.recipes,
       totalRecipes: action.payload.totalRecipes,
       numOfPages: action.payload.numOfPages,
+    };
+  }
+  if (action.type === SET_EDIT_RECIPE) {
+    const recipe = state.recipes.find(job => job._id === action.payload.id);
+    const { _id, title, description, prepTime, servings, cuisine, imgURL } =
+      recipe;
+
+    return {
+      ...state,
+      isEditing: true,
+      editRecipeId: _id,
+      title,
+      description,
+      prepTime,
+      servings,
+      cuisine,
+      imgURL,
+    };
+  }
+  if (action.type === DELETE_RECIPE_INIT) {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+  if (action.type === EDIT_RECIPE_INIT) {
+    return {
+      ...state,
+      isLoading: true,
+    };
+  }
+  if (action.type === EDIT_RECIPE_SUCCESS) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'success',
+      alertText: 'Recipe Updated!',
+    };
+  }
+  if (action.type === EDIT_RECIPE_ERROR) {
+    return {
+      ...state,
+      isLoading: false,
+      showAlert: true,
+      alertType: 'error',
+      alertText: action.payload.message,
     };
   }
   throw new Error(`no action found: ${action.type}`);

@@ -1,6 +1,8 @@
 const Recipe = require('./../models/recipeModel');
 const BadRequestError = require('./../errors/badRequest');
 const UnauthenticatedError = require('../errors/unauthenticated');
+const NotFoundError = require('../errors/notFound');
+const checkPremissions = require('../lib/checkPremissions');
 
 exports.createRecipe = async (req, res) => {
   const { title } = req.body;
@@ -28,10 +30,50 @@ exports.getAllRecipes = async (req, res) => {
   });
 };
 exports.updateRecipe = async (req, res) => {
-  res.send('update recipe');
+  const { id: recipeId } = req.params;
+  const { title } = req.body;
+
+  if (!title) {
+    throw new BadRequestError('Please provide a title for recipe');
+  }
+
+  const recipe = await Recipe.findOne({ _id: recipeId });
+  if (!recipe) {
+    throw new NotFoundError(`No recipe found with that ID: ${recipeId}`);
+  }
+
+  checkPremissions(req.user, recipe.createdBy);
+
+  const updatedRecipe = await Recipe.findByIdAndUpdate(recipeId, req.body, {
+    new: true,
+    runValidators: true,
+  });
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      updatedRecipe,
+    },
+  });
 };
 exports.deleteRecipe = async (req, res) => {
-  res.send('delete recipe');
+  const { id: recipeId } = req.params;
+
+  const recipe = await Recipe.findOne({ _id: recipeId });
+  if (!recipe) {
+    throw new NotFoundError(`No recipe found with that ID: ${recipeId}`);
+  }
+
+  checkPremissions(req.user, recipe.createdBy);
+
+  await Recipe.findByIdAndDelete(recipeId);
+
+  res.status(200).json({
+    status: 'success',
+    data: {
+      message: 'Recipe deleted',
+    },
+  });
 };
 exports.showStats = async (req, res) => {
   res.send('show recipes stats');
