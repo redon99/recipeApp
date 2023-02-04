@@ -14,6 +14,13 @@ import {
   UPDATE_USER_INIT,
   UPDATE_USER_SUCCESS,
   UPDATE_USER_ERROR,
+  HANDLE_CHANGE,
+  CLEAR_VALUES,
+  CREATE_RECIPE_INIT,
+  CREATE_RECIPE_SUCCESS,
+  CREATE_RECIPE_ERROR,
+  GET_RECIPES_INIT,
+  GET_RECIPES_SUCCESS,
 } from './actions';
 
 import reducer from './reducer';
@@ -28,6 +35,27 @@ const initialState = {
   alertType: '',
   user: user ? JSON.parse(user) : null,
   token: token || null,
+  isEditing: false,
+  editRecipeId: '',
+  title: '',
+  prepTime: 1,
+  servings: 1,
+  cuisineOptions: [
+    'italian',
+    'greek',
+    'japanese',
+    'american',
+    'mexican',
+    'other',
+  ],
+  cuisine: '',
+  imgURL: '',
+  ingredients: null,
+  recipeDescription: '',
+  recipes: [],
+  totalRecipes: 0,
+  numOfPages: 1,
+  page: 1,
 };
 
 const AppContext = React.createContext();
@@ -147,6 +175,65 @@ const AppProvider = props => {
     clearAlert();
   };
 
+  const handleChange = ({ name, value }) => {
+    dispatch({ type: HANDLE_CHANGE, payload: { name, value } });
+  };
+
+  const clearValues = () => {
+    dispatch({ type: CLEAR_VALUES });
+  };
+
+  const createRecipe = async () => {
+    dispatch({ type: CREATE_RECIPE_INIT });
+    try {
+      const { title, recipeDescription, prepTime, servings, cuisine, imgURL } =
+        state;
+      await authFetch.post('/recipes', {
+        title,
+        recipeDescription,
+        prepTime,
+        servings,
+        cuisine,
+        imgURL,
+      });
+      dispatch({ type: CREATE_RECIPE_SUCCESS });
+      dispatch({ type: CLEAR_VALUES });
+    } catch (err) {
+      if (err.response.status === 401) return;
+      dispatch({
+        type: CREATE_RECIPE_ERROR,
+        payload: { message: err.response.data.message },
+      });
+    }
+    clearAlert();
+  };
+
+  const getAllRecipes = async () => {
+    dispatch({ type: GET_RECIPES_INIT });
+    try {
+      const { data } = await authFetch.get('/recipes');
+      const { recipes, totalRecipes, numOfPages } = data.data;
+      dispatch({
+        type: GET_RECIPES_SUCCESS,
+        payload: {
+          recipes,
+          totalRecipes,
+          numOfPages,
+        },
+      });
+    } catch (err) {
+      console.log(err.response);
+    }
+    clearAlert();
+  };
+
+  const setEditRecipe = id => {
+    console.log(`Set edit recipe: ${id}`);
+  };
+  const deleteRecipe = id => {
+    console.log(`delete recipe: ${id}`);
+  };
+
   return (
     <AppContext.Provider
       value={{
@@ -156,6 +243,12 @@ const AppProvider = props => {
         loginUser,
         logoutUser,
         updateUser,
+        handleChange,
+        clearValues,
+        createRecipe,
+        getAllRecipes,
+        setEditRecipe,
+        deleteRecipe,
       }}
     >
       {props.children}

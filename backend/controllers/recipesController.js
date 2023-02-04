@@ -17,7 +17,15 @@ exports.createRecipe = async (req, res) => {
   });
 };
 exports.getAllRecipes = async (req, res) => {
-  res.send('get all recipes');
+  const recipes = await Recipe.find({ createdBy: req.user.userId });
+  res.status(200).json({
+    status: 'success',
+    data: {
+      totalRecipes: recipes.length,
+      recipes,
+      numOfPages: 1,
+    },
+  });
 };
 exports.updateRecipe = async (req, res) => {
   res.send('update recipe');
