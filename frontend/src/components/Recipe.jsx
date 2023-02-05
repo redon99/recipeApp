@@ -10,7 +10,7 @@ const Recipe = props => {
         id={props._id}
         title={props.title}
         imageURL={props.imageURL}
-        description={props.description}
+        recipeDescription={props.description}
       />
     </Grid>
   );

@@ -16,6 +16,7 @@ const AllRecipes = () => {
     cuisine,
     imgURL,
     isLoading,
+    recipeDesciption,
   } = useAppContext();
 
   useEffect(() => {
